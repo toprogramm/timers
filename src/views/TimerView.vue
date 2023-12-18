@@ -1,14 +1,17 @@
-
 <template>
 <div id="clock">
+  <div>{{ time }}</div>
+
+  <div id="clock" v-for="(clock, index) in clocks" :key="index">
   <v-card
-      class="mx-auto my-8 px-2"
+      class="mx-auto my-3 px-1"
       width="fit-content"
       rounded="lg"
       theme="dark"
-      title="SURVEY"
+      :title="clock.userData.cardName"
       align="center"
       justify="center"
+      :color= "clock.userData.cardColor"
     >
     <template v-slot:append>
       <div class="me-n2">
@@ -20,58 +23,81 @@
         ></v-btn>
       </div>
     </template>
-    <v-card-title class="py-5 font-weight-black">{{ time }}</v-card-title>
+    <v-card-title class="py-5 font-weight-black text-h4">{{ clock.time }}</v-card-title>
     <v-container>
       <v-row justify="center" align="center">
         <v-col cols="auto">
-          <v-btn id="toggle" min-width="112" size="x-large"  color="indigo-darken-3"  @click="toggleClock">{{ running ? 'Stop' : 'Start' }}</v-btn>
+          <v-btn id="toggle" min-width="112" size="x-large"  color="indigo-darken-3"  @click="toggleClock(index)">{{ running ? 'Stop' : 'Start' }}</v-btn>
        </v-col>
 
        <v-col cols="auto">
-          <v-btn id="send"  size="x-large" color="indigo-darken-3"  @click="sendData">Send</v-btn>
+          <v-btn id="send"  size="small" color="indigo-darken-3"  @click="sendData">Send</v-btn>
         </v-col>
      </v-row>
     </v-container>
-  </v-card>  
+  </v-card></div>
   
+ 
   <!-- <div class="text">
     <a href="https://codepen.io/raphael_octau" target="_blank">@raphael_octau</a>
   </div> -->
 </div>
+<div 
+    id="add" 
+    align="center"
+    justify="center"
+    @click="addTimer">
+  <v-btn
+        class="ma-2"
+        color="light-green-lighten-1"
+        size="x-large"
+      >
+        ADD NEW
+        <v-icon
+          end
+          icon="mdi-plus"
+          size="x-large"
+        ></v-icon>
+  </v-btn> 
+</div>
 
-  <v-bottom-navigation>
-    <v-btn value="recent">
-      <v-icon>mdi-history</v-icon>
-
-      <span>Home</span>
-    </v-btn>
-
-    <v-btn value="favorites" @click="reset">
-      <v-icon>mdi-heart</v-icon>
-
-      <span>Favorites</span>
-    </v-btn>
-
-    <v-btn value="nearby">
-      <v-icon>mdi-map-marker</v-icon>
-
-      <span>Back</span>
-    </v-btn>
-  </v-bottom-navigation>
 </template>
 <script >
 
 export default {
-  data () { return {
-    time: '00:00:00.000',
+  data () { return { 
+    time: '00:00:00.00',
     timeBegan: null,
     timeStopped: null,
     stoppedDuration: 0,
     started: null,
-    running: false
+    running: false,
+    userData: {
+      cardName: "ENGLISH",
+      cardColor:"#ff6600",
+    }, 
+    clocks: [],
+
   }
 },
   methods: {
+    addTimer: function() {
+    this.clocks.push({
+      time: '00:00:00.00',
+      timeBegan: null,
+      timeStopped: null,
+      stoppedDuration: 0,
+      started: null,
+      running: false,
+      userData: {
+      cardName: "ENGLISH",
+      cardColor:"#ff6600",
+      },
+    
+    });
+    console.log(this.clocks)
+    this.reset();
+    },
     toggleClock: function() {
       if (this.running) {
         this.stop();
@@ -105,7 +131,7 @@ export default {
       this.stoppedDuration = 0;
       this.timeBegan = null;
       this.timeStopped = null;
-      this.time = "00:00:00.000";
+      this.time = "00:00:00.00";
     },
     clockRunning: function() {
       var currentTime = new Date(),
@@ -119,7 +145,7 @@ export default {
         this.zeroPrefix(hour, 2) + ":" +
         this.zeroPrefix(min, 2) + ":" +
         this.zeroPrefix(sec, 2) + "." +
-        this.zeroPrefix(ms, 3);
+        this.zeroPrefix(ms, 2);
     },
     zeroPrefix: function(num, digit) {
       var zero = '';
